@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* Identidade FisioCenter Lapa (medida nos posts e no logo) */
+@theme {
+  --color-verde-marca: #607e36;
+  --color-verde-escuro: #3e5228;
+  --color-salvia: #aec6a8;
+  --color-oliva-claro: #96a27e;
+  --color-creme: #f0f0ea;
+  --color-areia: #ead8c0;
+  --color-texto: #2b3326;
+  --color-borda: #dfe0d4;
+  --color-suave: #6b7462;
+
+  --font-serif: var(--font-dm-serif), Georgia, serif;
+  --font-sans: var(--font-nunito), system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-creme);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  color: var(--color-verde-escuro);
+  font-weight: 400;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* FullCalendar com as cores da clínica */
+.fc {
+  --fc-border-color: var(--color-borda);
+  --fc-today-bg-color: #f6f3e9;
+  --fc-now-indicator-color: #b4532a;
+  --fc-event-border-color: transparent;
+  --fc-page-bg-color: #fff;
+  font-size: 0.85rem;
+}
+.fc .fc-toolbar-title {
+  font-family: var(--font-serif);
+  color: var(--color-verde-escuro);
+  font-size: 1.35rem;
+}
+.fc .fc-button-primary {
+  background: #fff;
+  color: var(--color-verde-escuro);
+  border: 1px solid var(--color-borda);
+  text-transform: capitalize;
+  box-shadow: none !important;
+}
+.fc .fc-button-primary:hover {
+  background: var(--color-creme);
+  color: var(--color-verde-escuro);
+  border-color: var(--color-borda);
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background: var(--color-verde-marca);
+  border-color: var(--color-verde-marca);
+  color: #fff;
+}
+.fc .fc-col-header-cell-cushion {
+  color: var(--color-verde-escuro);
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.fc .fc-timegrid-slot-label-cushion {
+  color: var(--color-suave);
+}
+.fc .fc-timegrid-slot {
+  height: 2em;
+}
+.fc-event {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 1px 3px;
+}
+.fc-event.status-cancelado {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+.fc-event.status-faltou {
+  background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(255, 255, 255, 0.25) 6px 12px);
+}
+.fc-event.status-agendado {
+  opacity: 0.85;
+}
+
+@media print {
+  aside,
+  .no-print {
+    display: none !important;
+  }
+}
