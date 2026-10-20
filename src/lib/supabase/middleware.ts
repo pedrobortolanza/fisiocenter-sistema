@@ -29,16 +29,20 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // getClaims valida o token localmente (chaves assimétricas) e só vai ao servidor de Auth quando precisa
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims.sub ? data.claims : null;
+  // O middleware roda na borda da Vercel, perto do usuário e longe do Supabase. Aqui só lemos a sessão
+  // do cookie (renovando o token quando vence), sem ida ao servidor de Auth a cada clique. Isso decide
+  // apenas o redirecionamento: quem garante o acesso é getSessao (no layout) e o RLS do banco.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const logado = Boolean(session);
 
-  if (!user && !publica) {
+  if (!logado && !publica) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-  if (user && pathname === "/login") {
+  if (logado && pathname === "/login") {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
