@@ -1,6 +1,7 @@
-import { Plus, Search } from "lucide-react";
+import { Plus, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { BotaoLink, Cabecalho, Cartao, Entrada, Selecao, Selo, Tabela, Vazio } from "@/components/ui";
+import { BarraFiltros, BuscaUrl, LimparFiltros, PilulasUrl, SelecaoUrl } from "@/components/filtros";
+import { BotaoLink, Cabecalho, Cartao, Selo, Tabela, Vazio } from "@/components/ui";
 import { exigirPapel } from "@/lib/auth";
 import { CONVENIOS, data, idade } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -33,23 +34,16 @@ export default async function PacientesPage({ searchParams }: { searchParams: Pr
         sub={`${lista.length} pacientes${termo ? ` encontrados para "${q}"` : ""}`}
         acoes={sessao.papel !== "fisio" && <BotaoLink href="/pacientes/novo"><Plus size={16} /> Novo paciente</BotaoLink>}
       />
-      <form className="mb-4 flex flex-wrap gap-2">
-        <div className="relative min-w-64 flex-1">
-          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-suave" />
-          <Entrada name="q" defaultValue={q} placeholder="Buscar por nome, CPF ou telefone" className="pl-9" />
-        </div>
-        <Selecao name="convenio" defaultValue={convenio} className="w-auto">
-          <option value="">Todos (particular e convênio)</option>
-          <option value="particular">Particular</option>
-          {CONVENIOS.map((c) => <option key={c}>{c}</option>)}
-        </Selecao>
-        <Selecao name="situacao" defaultValue={situacao} className="w-auto">
-          <option value="ativos">Cadastros ativos</option>
-          <option value="inativos">Inativos</option>
-          <option value="todos">Todos</option>
-        </Selecao>
-        <button className="rounded-lg bg-verde-marca px-4 text-sm font-semibold text-white hover:bg-verde-escuro">Filtrar</button>
-      </form>
+      <BarraFiltros>
+        <BuscaUrl placeholder="Buscar por nome, CPF ou telefone" />
+        <SelecaoUrl
+          param="convenio"
+          icone={<ShieldCheck size={16} />}
+          opcoes={[{ valor: "", rotulo: "Particular e convênios" }, { valor: "particular", rotulo: "Só particular" }, ...CONVENIOS.map((c) => ({ valor: c, rotulo: c }))]}
+        />
+        <PilulasUrl param="situacao" padrao="ativos" opcoes={[{ valor: "ativos", rotulo: "Ativos" }, { valor: "inativos", rotulo: "Inativos" }, { valor: "todos", rotulo: "Todos" }]} />
+        <LimparFiltros />
+      </BarraFiltros>
       <Cartao>
         {lista.length === 0 ? (
           <Vazio>Nenhum paciente encontrado.</Vazio>

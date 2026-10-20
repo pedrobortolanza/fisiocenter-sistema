@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { GraficoBarras, GraficoRosca } from "@/components/graficos";
-import { Abas, Botao, Cabecalho, Campo, Cartao, CartaoTitulo, Entrada, Indicador, Selecao, Selo, Tabela, Vazio } from "@/components/ui";
+import { Abas, Botao, Cabecalho, Campo, Cartao, CartaoTitulo, Entrada, EntradaIcone, EscolhaPagamento, Indicador, Selecao, Selo, Tabela, Vazio } from "@/components/ui";
 import { exigirPapel } from "@/lib/auth";
 import { CONVENIOS, FORMAS_PAGAMENTO, SITUACAO_RECEBIMENTO, data, fimDoMes, hojeISO, moeda, nomeMes, somaDias, somaMeses } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import { cancelarRecebimento, excluirDespesa, novaDespesa, novoRecebimento, pagarDespesa, receber } from "./actions";
+import { cancelarRecebimento, excluirDespesa, novaDespesa, novoRecebimento, pagarDespesa } from "./actions";
+import { ReceberBotao } from "./receber-botao";
 
 export const metadata = { title: "Financeiro" };
-
-const FORMAS = Object.entries(FORMAS_PAGAMENTO).filter(([k]) => k !== "boleto");
 
 export default async function FinanceiroPage({ searchParams }: { searchParams: Promise<{ aba?: string; mes?: string }> }) {
   const sessao = await exigirPapel("admin", "recepcao");
@@ -87,13 +86,7 @@ async function AReceber({ supabase, hoje }: { supabase: SB; hoje: string }) {
                   <td><Selo className={SITUACAO_RECEBIMENTO[r.situacao ?? ""]?.classe}>{SITUACAO_RECEBIMENTO[r.situacao ?? ""]?.rotulo}</Selo></td>
                   <td>
                     <div className="flex justify-end gap-1">
-                      <form action={receber} className="flex gap-1">
-                        <input type="hidden" name="id" value={r.id!} />
-                        <Selecao name="forma" className="w-32 px-2 py-1 text-xs" defaultValue={deConvenio(r.descricao) ? "convenio" : "pix"}>
-                          {FORMAS.map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                        </Selecao>
-                        <Botao className="px-2.5 py-1 text-xs">Receber</Botao>
-                      </form>
+                      <ReceberBotao id={r.id!} paciente={r.paciente_nome} descricao={r.descricao} valor={Number(r.valor)} formaPadrao={deConvenio(r.descricao) ? "convenio" : "pix"} />
                       <form action={cancelarRecebimento}>
                         <input type="hidden" name="id" value={r.id!} />
                         <Botao variante="fantasma" className="px-2 py-1 text-xs text-suave" title="Cancelar cobrança">✕</Botao>
@@ -159,13 +152,11 @@ async function Recebimentos({ supabase, mes, fim, hoje }: { supabase: SB; mes: s
             </Campo>
             <Campo rotulo="Descrição"><Entrada name="descricao" required placeholder="Ex.: Sessão de RPG" /></Campo>
             <div className="grid grid-cols-2 gap-3">
-              <Campo rotulo="Valor (R$)"><Entrada name="valor" required inputMode="decimal" placeholder="90,00" /></Campo>
+              <Campo rotulo="Valor"><EntradaIcone icone={<span className="text-xs font-bold">R$</span>} name="valor" required inputMode="decimal" placeholder="90,00" /></Campo>
               <Campo rotulo="Data"><Entrada type="date" name="vencimento" defaultValue={hoje} /></Campo>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Campo rotulo="Forma"><Selecao name="forma_pagamento">{FORMAS.map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Selecao></Campo>
-              <Campo rotulo="Modalidade"><Selecao name="modalidade_id">{(mods ?? []).map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}</Selecao></Campo>
-            </div>
+            <Campo rotulo="Forma de pagamento" grupo><EscolhaPagamento tamanho="sm" /></Campo>
+            <Campo rotulo="Modalidade"><Selecao name="modalidade_id">{(mods ?? []).map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}</Selecao></Campo>
             <Campo rotulo="Profissional (repasse)">
               <Selecao name="profissional_id" defaultValue=""><option value="">Nenhum</option>{(profs ?? []).map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}</Selecao>
             </Campo>
@@ -240,7 +231,7 @@ async function Despesas({ supabase, mes, fim, hoje }: { supabase: SB; mes: strin
               <Campo rotulo="Descrição"><Entrada name="descricao" required placeholder="Ex.: Conta de luz" /></Campo>
               <Campo rotulo="Categoria"><Selecao name="categoria_id">{(cats ?? []).map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</Selecao></Campo>
               <div className="grid grid-cols-2 gap-3">
-                <Campo rotulo="Valor (R$)"><Entrada name="valor" required inputMode="decimal" /></Campo>
+                <Campo rotulo="Valor"><EntradaIcone icone={<span className="text-xs font-bold">R$</span>} name="valor" required inputMode="decimal" placeholder="0,00" /></Campo>
                 <Campo rotulo="Vencimento"><Entrada type="date" name="vencimento" defaultValue={hoje} /></Campo>
               </div>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="pago" className="accent-verde-marca" /> Já foi paga</label>

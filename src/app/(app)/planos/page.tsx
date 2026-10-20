@@ -1,6 +1,7 @@
 import { MessageCircle, Plus } from "lucide-react";
 import Link from "next/link";
-import { Abas, BotaoLink, Cabecalho, Cartao, CartaoTitulo, Entrada, Indicador, Selecao, Selo, Tabela, Vazio } from "@/components/ui";
+import { BarraFiltros, BuscaUrl, LimparFiltros, PilulasUrl } from "@/components/filtros";
+import { Abas, BotaoLink, Cabecalho, Cartao, CartaoTitulo, Entrada, Indicador, Selo, Tabela, Vazio } from "@/components/ui";
 import { exigirPapel } from "@/lib/auth";
 import { DIAS_CURTO, PERIODICIDADES, STATUS_MATRICULA, data, hojeISO, linkWhatsApp, moeda, primeiroNome, somaDias } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -58,15 +59,18 @@ export default async function PlanosPage({ searchParams }: { searchParams: Promi
         const lista = mats.filter((m) => (status === "todos" || m.status === status) && (!termo || m.pacientes?.nome.toLowerCase().includes(termo)));
         return (
           <>
-            <form className="mb-4 flex flex-wrap gap-2">
-              <input type="hidden" name="aba" value="matriculas" />
-              <Entrada name="q" defaultValue={q} placeholder="Buscar aluno" className="w-64" />
-              <Selecao name="status" defaultValue={status} className="w-auto">
-                {Object.entries(STATUS_MATRICULA).map(([k, v]) => <option key={k} value={k}>{v.rotulo} ({contagem(k)})</option>)}
-                <option value="todos">Todos ({mats.length})</option>
-              </Selecao>
-              <button className="rounded-lg bg-verde-marca px-4 text-sm font-semibold text-white">Filtrar</button>
-            </form>
+            <BarraFiltros>
+              <BuscaUrl placeholder="Buscar aluno" />
+              <PilulasUrl
+                param="status"
+                padrao="ativo"
+                opcoes={[
+                  ...Object.entries(STATUS_MATRICULA).map(([k, v]) => ({ valor: k, rotulo: <>{v.rotulo} <span className="opacity-60">{contagem(k)}</span></> })),
+                  { valor: "todos", rotulo: <>Todos <span className="opacity-60">{mats.length}</span></> },
+                ]}
+              />
+              <LimparFiltros manter={["aba"]} />
+            </BarraFiltros>
             <Cartao>
               {lista.length === 0 ? <Vazio>Nenhuma matrícula.</Vazio> : (
                 <Tabela>
@@ -158,7 +162,7 @@ export default async function PlanosPage({ searchParams }: { searchParams: Promi
                         <form action={salvarPrecoPlano} className="flex items-center gap-1">
                           <input type="hidden" name="id" value={p.id} />
                           <span className="text-xs text-suave">R$</span>
-                          <Entrada name="preco" defaultValue={Number(p.preco_mensal)} className="w-20 px-2 py-1 text-right tabular" inputMode="decimal" />
+                          <Entrada name="preco" defaultValue={Number(p.preco_mensal)} className="h-8 w-20 px-2 text-right tabular" inputMode="decimal" />
                           <button className="rounded-md px-2 py-1 text-xs font-semibold text-verde-marca hover:bg-creme">Salvar</button>
                         </form>
                       ) : (
