@@ -29,9 +29,9 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims valida o token localmente (chaves assimétricas) e só vai ao servidor de Auth quando precisa
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims.sub ? data.claims : null;
 
   if (!user && !publica) {
     const url = request.nextUrl.clone();

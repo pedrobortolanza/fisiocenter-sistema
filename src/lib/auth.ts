@@ -14,19 +14,18 @@ export type Sessao = {
 
 export const getSessao = cache(async (): Promise<Sessao | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (!claims?.sub) return null;
   const { data: perfil } = await supabase
     .from("perfis")
     .select("nome, papel, profissional_id")
-    .eq("id", user.id)
+    .eq("id", claims.sub)
     .maybeSingle();
   return {
-    userId: user.id,
-    email: user.email ?? "",
-    nome: perfil?.nome ?? user.email ?? "",
+    userId: claims.sub,
+    email: claims.email ?? "",
+    nome: perfil?.nome ?? claims.email ?? "",
     papel: (perfil?.papel as Papel) ?? "recepcao",
     profissionalId: perfil?.profissional_id ?? null,
   };
