@@ -1,7 +1,8 @@
-import { MessageCircle } from "lucide-react";
+import { Layers, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { GraficoBarras, GraficoRosca } from "@/components/graficos";
-import { Cabecalho, Cartao, CartaoTitulo, Indicador, Selecao, Tabela, Vazio } from "@/components/ui";
+import { PilulasUrl, SelecaoUrl } from "@/components/filtros";
+import { Cabecalho, Cartao, CartaoTitulo, Indicador, Tabela, Vazio } from "@/components/ui";
 import { exigirPapel } from "@/lib/auth";
 import { data, hojeISO, linkWhatsApp, moeda, primeiroNome, somaDias } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
@@ -57,16 +58,14 @@ export default async function EstatisticasPage({ searchParams }: { searchParams:
         titulo="Estatísticas de pacientes"
         sub={`${data(ini)} a ${data(hoje)}${modalidade ? ` · ${mods?.find((m) => m.slug === modalidade)?.nome}` : " · todas as modalidades"}`}
         acoes={
-          <form className="flex flex-wrap gap-2">
-            <Selecao name="periodo" defaultValue={String(dias)} className="w-auto">
-              {PERIODOS.map((p) => <option key={p.dias} value={p.dias}>{p.rotulo}</option>)}
-            </Selecao>
-            <Selecao name="modalidade" defaultValue={modalidade} className="w-auto">
-              <option value="">Todas as modalidades</option>
-              {(mods ?? []).map((m) => <option key={m.slug} value={m.slug}>{m.nome}</option>)}
-            </Selecao>
-            <button className="rounded-lg bg-verde-marca px-4 text-sm font-semibold text-white">Aplicar</button>
-          </form>
+          <div className="flex flex-wrap items-center gap-2">
+            <PilulasUrl param="periodo" padrao="90" opcoes={PERIODOS.map((p) => ({ valor: String(p.dias), rotulo: p.rotulo.replace("Últimos ", "") }))} />
+            <SelecaoUrl
+              param="modalidade"
+              icone={<Layers size={16} />}
+              opcoes={[{ valor: "", rotulo: "Todas as modalidades" }, ...(mods ?? []).map((m) => ({ valor: m.slug, rotulo: m.nome }))]}
+            />
+          </div>
         }
       />
 

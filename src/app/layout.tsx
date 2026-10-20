@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Nunito_Sans } from "next/font/google";
+import { Nunito_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const serif = DM_Serif_Display({ weight: "400", subsets: ["latin"], variable: "--font-dm-serif" });
+const titulo = Plus_Jakarta_Sans({ weight: ["600", "700", "800"], subsets: ["latin"], variable: "--font-jakarta" });
 const sans = Nunito_Sans({ subsets: ["latin"], variable: "--font-nunito" });
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="pt-BR" className={`${titulo.variable} ${sans.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

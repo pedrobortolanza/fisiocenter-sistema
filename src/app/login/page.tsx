@@ -11,7 +11,7 @@ export default function LoginPage() {
         <Folhas />
         <Image src="/logo-claro.png" alt="Fisiocenter · Fisioterapia & Stúdio Pilates" width={276} height={102} priority />
         <div className="relative max-w-md">
-          <p className="font-serif text-5xl leading-tight text-creme">Cuidando da sua saúde desde 1995.</p>
+          <p className="font-titulo text-5xl font-bold leading-tight tracking-tight text-creme">Cuidando da sua saúde desde 1995.</p>
           <p className="mt-5 text-lg text-salvia">Pilates, reabilitação e qualidade de vida, agora com a agenda e o caixa no mesmo lugar.</p>
         </div>
         <p className="relative text-sm text-salvia">
